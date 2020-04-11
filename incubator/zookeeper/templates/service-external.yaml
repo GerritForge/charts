@@ -1,0 +1,58 @@
+{{- if .Values.external.enabled }}
+  {{- $loadBalancerIPLen := len .Values.external.loadBalancerIP }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    {{- if .Values.external.dns.useInternal }}
+    dns.alpha.kubernetes.io/internal: "{{ .Values.external.name }}.{{ .Values.external.domain }}"
+    {{- end }}
+    {{- if .Values.external.dns.useExternal }}
+    external-dns.alpha.kubernetes.io/hostname: "{{ .Values.external.name }}.{{ .Values.external.domain }}"
+    {{- end }}
+    {{- if .Values.external.annotations }}
+{{ toYaml .Values.external.annotations | indent 4 }}
+    {{- end }}
+  name: {{ template "zookeeper.fullname" . }}-external
+  labels:
+    app: {{ template "zookeeper.name" . }}
+    chart: {{ template "zookeeper.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: {{ .Values.external.type }}
+  ports:
+  {{- range $key, $value := .Values.service.ports }}
+    - name: {{ $key }}
+{{ toYaml $value | indent 6 }}
+  {{- end }}
+{{- if .Values.exporters.jmx.enabled }}
+  {{- range $key, $port := .Values.exporters.jmx.ports }}
+    - name: {{ $key }}
+      port: {{ $port.containerPort }}
+      targetPort: {{ $key }}
+      protocol: {{ $port.protocol }}
+  {{- end }}
+{{- end}}
+{{- if .Values.exporters.zookeeper.enabled }}
+  {{- range $key, $port := .Values.exporters.zookeeper.ports }}
+    - name: {{ $key }}
+      port: {{ $port.containerPort }}
+      targetPort: {{ $key }}
+      protocol: {{ $port.protocol }}
+  {{- end }}
+{{- end}}
+  {{- if eq .Values.external.type "LoadBalancer" }}
+  loadBalancerIP: {{ .Values.external.loadBalancerIP }} 
+  {{- end }}
+  {{- if .Values.external.loadBalancerSourceRanges }}
+  loadBalancerSourceRanges:
+    {{- range .Values.external.loadBalancerSourceRanges }}
+    - {{ . | quote}}
+    {{- end }}
+  {{- end }}
+  selector:
+    app: {{ template "zookeeper.name" . }}
+    release: {{ .Release.Name }}
+{{- end }}

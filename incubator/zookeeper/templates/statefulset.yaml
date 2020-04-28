@@ -90,13 +90,15 @@ spec:
               value: {{ $value | quote }}
           {{- end }}
           {{- range $secret := .Values.secrets }}
-            {{- range $key := $secret.keys }}
+             {{- if not $secret.mountPath }}
+              {{- range $key := $secret.keys }}
             - name: {{ (print $secret.name "_" $key) | upper }}
               valueFrom:
                 secretKeyRef:
                   name: {{ $secret.name }}
                   key: {{ $key }}
-            {{- end }}
+               {{- end }}
+              {{- end }}
           {{- end }}
           resources:
 {{ toYaml .Values.resources | indent 12 }}
@@ -193,9 +195,11 @@ spec:
             name: {{ template "zookeeper.fullname" . }}
             defaultMode: 0555
         {{- range .Values.secrets }}
+         {{- if .mountPath }}
         - name: {{ $.Release.Name }}-{{ .name }}
           secret:
             secretName: {{ .name }}
+          {{- end }}
         {{- end }}
         {{- if .Values.exporters.jmx.enabled }}
         - name: config-jmx-exporter

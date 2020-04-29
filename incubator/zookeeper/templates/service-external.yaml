@@ -23,7 +23,7 @@ metadata:
 spec:
   type: {{ .Values.external.type }}
   ports:
-  {{- range $key, $value := .Values.service.ports }}
+  {{- range $key, $value := .Values.external.ports }}
     - name: {{ $key }}
 {{ toYaml $value | indent 6 }}
   {{- end }}

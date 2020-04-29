@@ -30,6 +30,7 @@ data:
       ZK_DATA_LOG_DIR=${ZK_DATA_LOG_DIR:-"/data/log"}
       ZK_CONF_DIR=${ZK_CONF_DIR:-"/conf"}
       ZK_CLIENT_PORT=${ZK_CLIENT_PORT:-2181}
+      ZK_SECURE_CLIENT_PORT=${ZK_SECURE_CLIENT_PORT:-2281}
       ZK_SERVER_PORT=${ZK_SERVER_PORT:-2888}
       ZK_ELECTION_PORT=${ZK_ELECTION_PORT:-3888}
       ZK_TICK_TIME=${ZK_TICK_TIME:-2000}
@@ -77,6 +78,16 @@ data:
       echo "autopurge.purgeInterval=$ZK_PURGE_INTERVAL" >> $ZK_CONFIG_FILE
       echo "4lw.commands.whitelist=*" >> $ZK_CONFIG_FILE
 
+      if [ -n "$SSL_ENABLE" ]
+      then
+          echo "secureClientPort=$ZK_SECURE_CLIENT_PORT" >> $ZK_CONFIG_FILE
+          SSL_TRUSTSTORE_PASSWORD_VARIABLE_NAME="$(echo "${SSL_SECRET_NAME}_TRUSTSTORE_PASSWORD" | tr [a-z] [A-Z] | tr '-' '_')"
+          SSL_TRUSTSTORE_PASSWORD=${!SSL_TRUSTSTORE_PASSWORD_VARIABLE_NAME}
+          SSL_KEYSTORE_PASSWORD_VARIABLE_NAME="$(echo "${SSL_SECRET_NAME}_KEYSTORE_PASSWORD" | tr [a-z] [A-Z] | tr '-' '_')"
+          SSL_KEYSTORE_PASSWORD=${!SSL_KEYSTORE_PASSWORD_VARIABLE_NAME}
+          SERVER_JVMFLAGS="-Dzookeeper.serverCnxnFactory=org.apache.zookeeper.server.NettyServerCnxnFactory -Dzookeeper.ssl.keyStore.location=$SSL_KEYSTORE_LOCATION -Dzookeeper.ssl.trustStore.location=$SSL_TRUSTSTORE_LOCATION -Dzookeeper.ssl.keyStore.password=$SSL_KEYSTORE_PASSWORD -Dzookeeper.ssl.trustStore.password=$SSL_TRUSTSTORE_PASSWORD"
+      fi
+
       for (( i=1; i<=$ZK_REPLICAS; i++ ))
       do
           echo "server.$i=$NAME-$((i-1)).$DOMAIN:$ZK_SERVER_PORT:$ZK_ELECTION_PORT" >> $ZK_CONFIG_FILE
@@ -107,4 +118,4 @@ data:
       fi
 
       set -x
-      exec java -cp "$CLASSPATH" $JVMFLAGS $MAIN $ZK_CONFIG_FILE
+      exec java -cp "$CLASSPATH" $SERVER_JVMFLAGS $JVMFLAGS $MAIN $ZK_CONFIG_FILE

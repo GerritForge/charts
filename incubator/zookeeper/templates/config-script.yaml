@@ -85,7 +85,9 @@ data:
           SSL_TRUSTSTORE_PASSWORD=${!SSL_TRUSTSTORE_PASSWORD_VARIABLE_NAME}
           SSL_KEYSTORE_PASSWORD_VARIABLE_NAME="$(echo "${SSL_SECRET_NAME}_KEYSTORE_PASSWORD" | tr [a-z] [A-Z] | tr '-' '_')"
           SSL_KEYSTORE_PASSWORD=${!SSL_KEYSTORE_PASSWORD_VARIABLE_NAME}
-          SERVER_JVMFLAGS="-Dzookeeper.serverCnxnFactory=org.apache.zookeeper.server.NettyServerCnxnFactory -Dzookeeper.ssl.keyStore.location=$SSL_KEYSTORE_LOCATION -Dzookeeper.ssl.trustStore.location=$SSL_TRUSTSTORE_LOCATION -Dzookeeper.ssl.keyStore.password=$SSL_KEYSTORE_PASSWORD -Dzookeeper.ssl.trustStore.password=$SSL_TRUSTSTORE_PASSWORD"
+          SSL_CLIENT_AUTH=${SSL_CLIENT_AUTH:-"none"}
+
+          SERVER_JVMFLAGS="-Dzookeeper.serverCnxnFactory=org.apache.zookeeper.server.NettyServerCnxnFactory -Dzookeeper.ssl.clientAuth=$SSL_CLIENT_AUTH -Dzookeeper.ssl.keyStore.location=$SSL_KEYSTORE_LOCATION -Dzookeeper.ssl.trustStore.location=$SSL_TRUSTSTORE_LOCATION -Dzookeeper.ssl.keyStore.password=$SSL_KEYSTORE_PASSWORD -Dzookeeper.ssl.trustStore.password=$SSL_TRUSTSTORE_PASSWORD"
       fi
 
       for (( i=1; i<=$ZK_REPLICAS; i++ ))

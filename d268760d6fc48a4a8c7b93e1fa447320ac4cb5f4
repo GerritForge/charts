@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4334446a_c5c6a42a",
+        "filename": "incubator/kafka/templates/service-brokers-external.yaml",
+        "patchSetId": 1
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2020-05-03T20:39:14Z",
+      "side": 1,
+      "message": "should this be configurable as a separate port?",
+      "range": {
+        "startLine": 64,
+        "startChar": 49,
+        "endLine": 64,
+        "endChar": 53
+      },
+      "revId": "d268760d6fc48a4a8c7b93e1fa447320ac4cb5f4",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "4f1d0b3d_dd817a87",
+        "filename": "incubator/kafka/templates/service-brokers-external.yaml",
+        "patchSetId": 1
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2020-05-03T20:39:14Z",
+      "side": 1,
+      "message": "should this be configurable as a separate port?",
+      "range": {
+        "startLine": 70,
+        "startChar": 51,
+        "endLine": 70,
+        "endChar": 55
+      },
+      "revId": "d268760d6fc48a4a8c7b93e1fa447320ac4cb5f4",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    }
+  ]
+}

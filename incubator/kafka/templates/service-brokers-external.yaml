@@ -58,6 +58,20 @@ spec:
       nodePort: {{ $externalListenerPort }}
       {{- end }}
       protocol: TCP
+  {{- if $root.Values.prometheus.jmx.enabled }}
+    - name: prometheus-jmx
+      port: {{ $root.Values.prometheus.jmx.port }}
+      targetPort: {{ $root.Values.prometheus.jmx.port }}
+      protocol: TCP
+  {{- end}}
+  {{- if $root.Values.prometheus.kafka.enabled }}
+    - name: prometheus-kafka
+      port: {{ $root.Values.prometheus.kafka.port }}
+      targetPort: {{ $root.Values.prometheus.kafka.port }}
+      protocol: TCP
+  {{- end}}
+
+
   {{- if and (eq $root.Values.external.type "LoadBalancer") (eq $loadBalancerIPLen $replicas) }}
   loadBalancerIP: {{ index $root.Values.external.loadBalancerIP $i }} 
   {{- end }}
